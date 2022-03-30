@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="css/style.css" />
+    <title>This is A Message window</title>
+    <script src="js/script.js" defer type="module"></script>
+    <script src="js/socket.io.js"></script>`
+</head>
+<body>
+<div class="chat-container">
+    <header class="chat-header">
+        <h1>OST Chat</h1>
+        <a id="logout-button" class="logout">Logout</a>
+    </header>
+    <main class="chat-main">
+        <div class="chat-side">
+            <h3>OST Room: </h3>
+            <h2 id="room-name"></h2>
+            <h3>Logged in as: </h3>
+            <div id="currentUser"> </div>
+            <h3>Active Users: </h3>
+            <ul id="users"></ul>
+        </div>
+        <div class="message-display"></div>
+    </main>
+    <div class="chat-form-container">
+        <form id="chat-form">
+            <label for="message"></label>
+            <input id="message" type="text" placeholder="Enter Message" required autofocus autocomplete="off"/>
+            <button class="button">Send</button>
+        </form>
+        <button class="button" id="send-other">Send Other</button>
+    </div>
+</div>
+
+</body>
+</html>
+
+<!--<div id="container">-->
+<!--    <div id="menu">-->
+<!--        <p class="welcome">You're logged in as, <b></b></p>-->
+<!--        <button class="logout" id="logout-button"><a href="#">Logout</a></button>-->
+<!--    </div>-->
+
+<!--    <div id="chatwindow">-->
+<!--        <div id="chat-legend">-->
+<!--            <button id="test-chat"></button>-->
+<!--        </div>-->
+<!--        <div id="chatbox"></div>-->
+<!--    </div>-->
+<!--    <div id="text-window">-->
+<!--        <button id="add-chat">Add Chat</button>-->
+<!--        <form name="chat-form" method="post">-->
+<!--            <label for="message-field"></label>-->
+<!--            <input name="message" type="text" placeholder="Enter a message..." maxlength="200" id="message-field" />-->
+<!--            <button name="submit-button" type="submit" id="submit">Send</button>-->
+<!--        </form>-->
+<!--    </div>-->
+<!--</div>-->
