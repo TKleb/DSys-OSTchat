@@ -4,20 +4,6 @@ const currentUser = document.getElementById('currentUser');
 const userList = document.getElementById('users');
 const chatMessages = document.querySelector('.message-display');
 
-const sendOther = document.getElementById('send-other');
-
-function changeUser() {
-    if (!(currentUser.innerText === 'OtherUser')) {
-        currentUser.innerText = 'OtherUser';
-    } else {
-        currentUser.innerText = getQueryVariable("username").replace('+',' ');
-    }
-}
-
-sendOther.addEventListener('click', () => {
-    changeUser();
-})
-
 function getQueryVariable(variable) {
     let query = window.location.search.substring(1);
     let vars = query.split('&');
@@ -98,22 +84,3 @@ messageForm.addEventListener('submit', (e) => {
 })
 
 displayActiveInfo()
-
-
-
-
-
-
-
-
-
-
-// const addChatButton = document.getElementById('add-chat');
-// const chatLegend = document.getElementById("chat-legend");
-
-// function addChat() {
-//     let box = document.createElement("button");
-//     chatLegend.appendChild(box);
-// }
-
-// addChatButton.addEventListener('click', addChat);

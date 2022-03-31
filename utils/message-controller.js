@@ -15,4 +15,7 @@ function messageFormat(username, text) {
     }
 }
 
-module.exports = messageFormat;
+module.exports = {
+    messageFormat,
+    currentDate
+};
