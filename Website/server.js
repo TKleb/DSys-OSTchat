@@ -3,8 +3,8 @@ const { Pool } = require('pg')
 const http = require('http');
 const express = require('express');
 const { Server } = require('socket.io')
-const {prepareUserForDatabase, addUserToList, getTypingUser, getAllUsersForRoom} = require("./utils/user-controller");
-const {messageFormat, currentDate} = require("./utils/message-controller");
+const { addUserToList, getTypingUser, getAllUsersForRoom } = require("./utils/user-controller");
+const { messageFormat, currentDate } = require("./utils/message-controller");
 
 const PORT = 3030;
 const HOSTNAME = '0.0.0.0'
@@ -33,17 +33,28 @@ const client = new Pool({
 
 io.on('connection', socket => {
     console.log("connection worked")
-    socket.on('userJoin', ({username, room}) => {
-        const user = addUserToList(socket.id, username, room);
-        const userdb = prepareUserForDatabase(username);
-        client.query("INSERT INTO users (id, username) VALUES ($1, $2) ON CONFLICT DO NOTHING", [userdb[0], userdb[1]])
-        const roomName = room;
-        socket.join(user.roomname);
-
-        io.to(user.roomname).emit('currentUsers', {
-            room: user.roomname,
-            users: getAllUsersForRoom(user.roomname)
+    socket.on('userJoin', ({ username, room }) => {
+        client.query("SELECT * FROM add_user($1)", [username], (err, result) => {
+            if (err) {
+                console.log('Error executing query', err.stack)
+            }
+            if (result.rowCount === 1) {
+                const userid = result.rows[0].user_id
+                const user = addUserToList(userid, username, room);
+                const roomName = room;
+                socket.join(user.roomname);
+                console.log('User joined:', user);
+                io.to(user.roomname).emit('currentUsers',
+                    {
+                        room: user.roomname,
+                        users: getAllUsersForRoom(user.roomname)
+                    }
+                )
+            } else {
+                console.log('Unexpected reply from database. User was expected.', result);
+            }
         })
+
     })
 
     socket.on('userMessage', message => {
