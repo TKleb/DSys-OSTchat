@@ -1,12 +1,12 @@
 -- General init
 CREATE USER backend WITH PASSWORD 'password';
-GRANT ALL PRIVILEGES ON DATABASE osteams TO admin;
+GRANT ALL PRIVILEGES ON DATABASE ostchat TO admin;
 
 -- Create Tables
 CREATE TABLE users (
     user_id          INTEGER UNIQUE GENERATED ALWAYS AS IDENTITY,
     user_username    VARCHAR(255) UNIQUE NOT NULL
-);
+) TABLESPACE pg_default;
 
 CREATE TABLE messages
 (
@@ -17,7 +17,7 @@ CREATE TABLE messages
     CONSTRAINT fk_sender
       FOREIGN KEY(message_sender_id)
       REFERENCES users(user_id)
-);
+) TABLESPACE pg_default;
 
 -- Fetch User Function
 CREATE OR REPLACE FUNCTION get_user(username VARCHAR)

@@ -23,13 +23,12 @@ app.get('/', (req, res) => {
     res.status(200).sendFile(__dirname + "/public/login.html")
 })
 
-const client = new Pool ({
-    user: "postgres",
-    host: "localhost",
-    database: "postgres",
+const client = new Pool({
+    user: "backend",
+    host: "ostchat-database",
+    database: "ostchat",
     password: "password",
     port: "5432"
-
 })
 
 io.on('connection', socket => {
