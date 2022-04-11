@@ -7,7 +7,7 @@ const {prepareUserForDatabase, addUserToList, getTypingUser, getAllUsersForRoom}
 const {messageFormat, currentDate} = require("./utils/message-controller");
 
 const PORT = 3030;
-const HOSTNAME = '127.0.0.1'
+const HOSTNAME = '0.0.0.0'
 
 const app = express();
 const server = http.createServer(app).listen(PORT, HOSTNAME, () => {
