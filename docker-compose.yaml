@@ -1,0 +1,48 @@
+version: '3.9'
+
+services:
+  db:
+    container_name: ostchat-database
+    build:
+      context: ./Database
+      target: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-ostchat}
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    # TODO: Volume currently disabled to make it volatile. Uncomment to make it persistent.
+    #volumes:
+    #  - postgres-db:/var/lib/postgresql/data
+    networks:
+      - ostchat-backend-db
+      - ostchat-db-pgadmin4
+
+  pgadmin:
+    container_name: ostchat-pgadmin
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@admin.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-root}
+      PGADMIN_CONFIG_SERVER_MODE: ${PGADMIN_CONFIG_SERVER_MODE:-False}
+    volumes:
+      - ostchat-pgadmin:/var/lib/pgadmin
+    networks:
+      - ostchat-db-pgadmin4
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    depends_on:
+      - db
+
+volumes:
+  ostchat-pgadmin:
+
+networks:
+  ostchat-backend-db:
+    ipam:
+      driver: default
+  ostchat-db-pgadmin4:
+    ipam:
+      driver: default
