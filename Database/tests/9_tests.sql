@@ -42,3 +42,19 @@ $room_tests$ BEGIN
         RAISE EXCEPTION 'add_room failed';
     END IF;
 END $room_tests$;
+
+-- Message Tests
+DO
+$room_tests$ BEGIN
+    IF NOT EXISTS(
+        SELECT * FROM post_message(1, 1, 'Sample message test', '2022-04-17')
+    ) THEN
+        RAISE EXCEPTION 'post_message failed';
+    END IF;
+
+    IF NOT EXISTS(
+        SELECT * FROM get_messages(1)
+    ) THEN
+        RAISE EXCEPTION 'get_messages failed';
+    END IF;
+END $room_tests$;
