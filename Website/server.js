@@ -55,11 +55,10 @@ function socketFunction() {
                 if (result.rowCount === 1) {
                     const userid = result.rows[0].id
                     const user = addUserToList(userid, username, room, socket.id);
-                    const roomName = room;
                     socket.join(user.roomname);
                     console.log('User joined:', user);
                     io.to(user.roomname).emit('currentUsers',
-                        {   
+                        {
                             room: user.roomname,
                             users: getAllUsersForRoom(user.roomname)
                         }
@@ -68,8 +67,11 @@ function socketFunction() {
                         if (err) {
                             console.log('Error executing query', err.stack)
                         } else {
-                            const previousMessages = result;
-                            console.log(previousMessages);
+                            const previousMessages = result.rows;
+                            for (msg of previousMessages) {
+                                // TODO: ensure only joining user receives these messages
+                                io.to(user.roomname).emit('chatMessage', messageFormat(msg.sender_name, msg.content))
+                            }
                         }
                     })
                 } else {

@@ -4,6 +4,7 @@ CREATE OR REPLACE FUNCTION get_messages(p_room_id INT)
     RETURNS TABLE (
         id        INTEGER,
         sender_id INT,
+        sender_name VARCHAR,
         room_id   INT,
         content   VARCHAR,
         tmstmp VARCHAR
@@ -15,10 +16,12 @@ AS $$
         RETURN QUERY
         SELECT  message_id,
                 message_sender_id,
+                user_username AS sender_name,
                 message_room_id,
                 message_content,
                 message_timestamp
         FROM messages
+        JOIN users on user_id = message_sender_id
         WHERE messages.message_room_id = p_room_id;
     END
 $$;

@@ -6,6 +6,7 @@ function addUserToList(id, username, roomname, socketid) {
     return user;
 }
 
+// TODO: roomname -> roomid
 function getAllUsersForRoom(room) {
     return activeUsers.filter(user => user.roomname === room)
 }
