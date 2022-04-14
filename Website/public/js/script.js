@@ -22,7 +22,7 @@ const room = getQueryVariable("chatroom-selection")
 // Socket Stuff
 let socket = io();
 
-socket.emit('userJoin', { username, room});
+socket.emit('userJoin', { username, room });
 
 socket.on('chatMessage', (message) => {
     console.log(message)
@@ -82,5 +82,3 @@ messageForm.addEventListener('submit', (e) => {
     e.target.elements.message.value = '';
     e.target.elements.message.focus();
 })
-
-displayActiveInfo()

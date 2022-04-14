@@ -31,36 +31,60 @@ const client = new Pool({
     port: "5432"
 })
 
-io.on('connection', socket => {
-    console.log("connection worked")
-    socket.on('userJoin', ({ username, room }) => {
-        client.query("SELECT * FROM add_user($1)", [username], (err, result) => {
-            if (err) {
-                console.log('Error executing query', err.stack)
-            }
-            if (result.rowCount === 1) {
-                const userid = result.rows[0].user_id
-                const user = addUserToList(userid, username, room);
-                const roomName = room;
-                socket.join(user.roomname);
-                console.log('User joined:', user);
-                io.to(user.roomname).emit('currentUsers',
-                    {
-                        room: user.roomname,
-                        users: getAllUsersForRoom(user.roomname)
-                    }
-                )
-            } else {
-                console.log('Unexpected reply from database. User was expected.', result);
-            }
+let roomList = []
+
+function getRoomLists() {
+    let roomList = client.query("SELECT * FROM get_rooms()", [])
+    return roomList
+}
+
+getRoomLists().then((result) => {
+    roomList = result.rows
+    socketFunction()
+})
+
+function socketFunction() {
+    io.on('connection', socket => {
+        console.log("connection worked")
+        socket.on('userJoin', ({ username, room }) => {
+            console.log(roomList);
+            client.query("SELECT * FROM add_user($1)", [username], (err, result) => {
+                if (err) {
+                    console.log('Error executing query', err.stack)
+                }
+                if (result.rowCount === 1) {
+                    const userid = result.rows[0].id
+                    const user = addUserToList(userid, username, room, socket.id);
+                    const roomName = room;
+                    socket.join(user.roomname);
+                    console.log('User joined:', user);
+                    io.to(user.roomname).emit('currentUsers',
+                        {   
+                            room: user.roomname,
+                            users: getAllUsersForRoom(user.roomname)
+                        }
+                    )
+                    client.query("SELECT * FROM get_messages(1)", [], (err, result) => {
+                        if (err) {
+                            console.log('Error executing query', err.stack)
+                        } else {
+                            const previousMessages = result;
+                            console.log(previousMessages);
+                        }
+                    })
+                } else {
+                    console.log('Unexpected reply from database. User was expected.', result);
+                }
+            })
         })
 
+        socket.on('userMessage', message => {
+            const user = getTypingUser(socket.id);
+            const currentTime = currentDate()
+            // fuck this shit room id hardcoded to be 1
+            // todo dont do this shit
+            client.query("SELECT * FROM post_message($1, 1, $2, $3)", [user.id, message, currentTime])
+            io.to(user.roomname).emit('chatMessage', messageFormat(user.username, message))
+        })
     })
-
-    socket.on('userMessage', message => {
-        const user = getTypingUser(socket.id);
-        const currentTime = currentDate()
-        client.query("INSERT INTO messages (username, text, sent) VALUES ($1, $2, $3)", [user.username, message, currentTime])
-        io.to(user.roomname).emit('chatMessage', messageFormat(user.username, message))
-    })
-})
+}

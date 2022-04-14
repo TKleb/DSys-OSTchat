@@ -1,7 +1,7 @@
 const activeUsers = []
 
-function addUserToList(id, username, roomname) {
-    const user = { id, username, roomname };
+function addUserToList(id, username, roomname, socketid) {
+    const user = { id, username, roomname, socketid };
     activeUsers.push(user);
     return user;
 }
@@ -11,7 +11,7 @@ function getAllUsersForRoom(room) {
 }
 
 function getTypingUser(id) {
-    return activeUsers.find(user => user.id === id);
+    return activeUsers.find(user => user.socketid === id);
 }
 
 module.exports = {
