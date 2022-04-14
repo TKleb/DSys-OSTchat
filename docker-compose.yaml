@@ -21,7 +21,7 @@ services:
     container_name: ostchat-database
     build:
       context: ./Database
-      target: postgres
+      target: postgres-${TARGET:-development}
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-admin}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
