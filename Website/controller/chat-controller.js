@@ -9,6 +9,10 @@ class ChatController {
 				res.render("login", { rooms: [], error: err });
 			});
     }
+
+	chat(req, res) {
+		res.render("chat");
+	}
 }
 
 export default new ChatController();

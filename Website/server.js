@@ -15,7 +15,14 @@ const HOSTNAME = '0.0.0.0'
 const app = express();
 const hbs = exphbs.create({
     extname: '.hbs',
-    defaultLayout: "default"
+    defaultLayout: "default",
+    helpers: {
+        section: function(name, options) { 
+          if (!this._sections) this._sections = {};
+            this._sections[name] = options.fn(this); 
+            return null;
+          }
+      } 
 });
 
 app.engine('hbs', hbs.engine);
@@ -57,7 +64,10 @@ function socketFunction() {
     io.on('connection', socket => {
         console.log("connection worked")
         socket.on('userJoin', ({ username, room }) => {
-            console.log(roomList);
+            if (!username){
+                console.log('Error!');
+                return;
+            }
             client.query("SELECT * FROM add_user($1)", [username], (err, result) => {
                 if (err) {
                     console.log('Error executing query:', err.stack)
@@ -82,10 +92,10 @@ function socketFunction() {
                             return;
                         } else {
                             const previousMessages = result.rows;
-                            for (msg of previousMessages) {
+                            previousMessages.forEach((msg) => {
                                 // TODO: ensure only joining user receives these messages
                                 io.to(user.roomname).emit('chatMessage', messageFormat(msg.sender_name, msg.content))
-                            }
+                            }) 
                         }
                     })
                 } else {
@@ -95,6 +105,7 @@ function socketFunction() {
         })
 
         socket.on('userMessage', message => {
+            console.log(socket.id)
             const user = getTypingUser(socket.id);
             const currentTime = currentDate()
             const currentRoomElement = roomList.find(element => element.room_name === user.roomname)

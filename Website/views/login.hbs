@@ -1,6 +1,26 @@
-<h1>LOGIN</h1>
-
-{{#each rooms}}
-    <h3>{{room_name}}</h3>
-    <h4>{{id}}</h4>
-{{/each}}
+<div class="login-container">
+        <header class="login-header">
+            <h1>OST Chat</h1>
+        </header>
+        <main class="login-main">
+            <form action="chat.html">
+                <div class="login-form-div">
+                    <label for="username">Username</label>
+                    <input type="text" name="username"
+                           id="username" placeholder="Enter a Username" required autofocus autocomplete="off"
+                    />
+                </div>
+                <div class="login-form-div">
+                    <label for="chatrooms"></label>
+                    {{#each rooms}}
+                        <button type="submit" 
+                            href="/chat/{{id}}" 
+                            name="chatroom-selection" 
+                            value="{{room_name}}"
+                            class="chat-select-btn"
+                        >{{room_name}}</button>
+                    {{/each}}
+                </div>
+            </form>
+        </main>
+    </div>

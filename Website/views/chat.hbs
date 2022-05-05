@@ -1,1 +1,31 @@
-<h1>CHAT</h1>
+{{#section 'script'}}
+    <script src="/js/script.js" defer type="module"></script>
+    <script src="/js/socket.io.js"></script>
+{{/section}}
+
+
+<div class="chat-container">
+    <header class="chat-header">
+        <h1>OST Chat</h1>
+        <a id="logout-button" class="logout">Logout</a>
+    </header>
+    <main class="chat-main">
+        <div class="chat-side">
+            <h3>OST Room: </h3>
+            <h2 id="room-name"></h2>
+            <h3>Logged in as: </h3>
+            <div id="currentUser"> </div>
+            <h3>Active Users: </h3>
+            <ul id="users"></ul>
+        </div>
+        <div class="message-display"></div>
+    </main>
+    <div class="chat-form-container">
+        <form id="chat-form">
+            <label for="message"></label>
+            <input id="message" type="text" placeholder="Enter Message" required autofocus autocomplete="off"/>
+            <button class="button">Send</button>
+        </form>
+        <button class="button" id="send-other">Send Other</button>
+    </div>
+</div>
