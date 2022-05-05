@@ -5,7 +5,6 @@ function addUserToList(id, username, roomname, socketid) {
     activeUsers.push(user);
     return user;
 }
-
 // TODO: roomname -> roomid
 function getAllUsersForRoom(room) {
     return activeUsers.filter(user => user.roomname === room)
@@ -15,7 +14,7 @@ function getTypingUser(id) {
     return activeUsers.find(user => user.socketid === id);
 }
 
-module.exports = {
+export {
     addUserToList,
     getTypingUser,
     getAllUsersForRoom

@@ -6,12 +6,15 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "node server.js"
     },
+    "type": "module",
     "author": "Thomas Kleb | Dominic Walther",
     "license": "ISC",
     "dependencies": {
         "express": "^4.17.3",
+        "express-handlebars": "^6.0.5",
         "express-ws": "^5.0.2",
         "pg": "^8.7.3",
+        "pg-promise": "^10.11.1",
         "socket.io": "^4.4.1"
     },
     "devDependencies": {

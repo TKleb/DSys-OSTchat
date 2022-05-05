@@ -1,15 +1,27 @@
-const path = require('path');
-const { Pool } = require('pg')
-const http = require('http');
-const express = require('express');
-const { Server } = require('socket.io')
-const { addUserToList, getTypingUser, getAllUsersForRoom } = require("./utils/user-controller");
-const { messageFormat, currentDate } = require("./utils/message-controller");
+import path from 'path';
+import pkg from 'pg';
+const { Pool } = pkg;
+import http from 'http';
+import express from 'express';
+import exphbs from 'express-handlebars';
+import { Server } from 'socket.io';
+import {chatRoutes} from "./router/chat-routes.js";
+import { addUserToList, getTypingUser, getAllUsersForRoom } from "./controller/user-controller.js";
+import { messageFormat, currentDate } from "./controller/message-controller.js";
 
 const PORT = 3030;
 const HOSTNAME = '0.0.0.0'
 
 const app = express();
+const hbs = exphbs.create({
+    extname: '.hbs',
+    defaultLayout: "default"
+});
+
+app.engine('hbs', hbs.engine);
+app.set('view engine', 'hbs');
+app.set('views', path.resolve('views'));
+
 const server = http.createServer(app).listen(PORT, HOSTNAME, () => {
     console.log(`Server running at http://${HOSTNAME}:${PORT}`)
 });
@@ -17,11 +29,9 @@ const server = http.createServer(app).listen(PORT, HOSTNAME, () => {
 const adminAccount = 'OST Admin'
 const io = new Server(server)
 
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(path.resolve("public")));
 
-app.get('/', (req, res) => {
-    res.status(200).sendFile(__dirname + "/public/login.html")
-})
+app.use("/", chatRoutes);
 
 const client = new Pool({
     user: "backend",
@@ -87,9 +97,11 @@ function socketFunction() {
         socket.on('userMessage', message => {
             const user = getTypingUser(socket.id);
             const currentTime = currentDate()
+            const currentRoomElement = roomList.find(element => element.room_name === user.roomname)
+            const currentRoomId = currentRoomElement.id
             // fuck this shit room id hardcoded to be 1
             // todo dont do this shit
-            client.query("SELECT * FROM post_message($1, 1, $2, $3)", [user.id, message, currentTime])
+            client.query("SELECT * FROM post_message($1, $4, $2, $3)", [user.id, message, currentTime, currentRoomId])
             io.to(user.roomname).emit('chatMessage', messageFormat(user.username, message))
         })
     })

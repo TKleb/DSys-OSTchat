@@ -1,4 +1,3 @@
-
 function currentDate() {
     const now = new Date();
     let minutes = now.getMinutes();
@@ -16,7 +15,7 @@ function messageFormat(username, text) {
     }
 }
 
-module.exports = {
+export {
     messageFormat,
     currentDate
 };
