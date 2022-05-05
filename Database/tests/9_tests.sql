@@ -58,3 +58,6 @@ $room_tests$ BEGIN
         RAISE EXCEPTION 'get_messages failed';
     END IF;
 END $room_tests$;
+
+-- Cleanup
+DELETE FROM rooms WHERE room_name = 'Dysys';

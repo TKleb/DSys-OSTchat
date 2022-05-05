@@ -3,6 +3,7 @@ FROM postgres:14-alpine3.15 AS postgres-production
 RUN apk update && apk upgrade
 EXPOSE 5432
 COPY schemas/*.sql /docker-entrypoint-initdb.d/
+COPY production/*.sql /docker-entrypoint-initdb.d/
 
 FROM postgres-production AS postgres-development
 COPY tests/*.sql /docker-entrypoint-initdb.d/

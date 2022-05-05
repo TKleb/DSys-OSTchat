@@ -7,7 +7,7 @@ CREATE TABLE users (
 --------------------------------------------------------------------------------
 CREATE TABLE rooms (
     room_id         INTEGER UNIQUE GENERATED ALWAYS AS IDENTITY,
-    room_name       VARCHAR NOT NULL
+    room_name       VARCHAR UNIQUE NOT NULL
 ) TABLESPACE pg_default;
 
 --------------------------------------------------------------------------------
@@ -23,5 +23,5 @@ CREATE TABLE messages
       REFERENCES users(user_id),
     CONSTRAINT fk_room
       FOREIGN KEY(message_room_id)
-      REFERENCES rooms(room_id)
+      REFERENCES rooms(room_id) ON DELETE CASCADE
 ) TABLESPACE pg_default;
