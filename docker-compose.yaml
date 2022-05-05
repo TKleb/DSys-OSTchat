@@ -1,6 +1,20 @@
 version: '3.9'
 
 services:
+  loadbalancer:
+    build:
+      context: ./Traefik
+    ports:
+      - 80:80
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./Traefik/config/traefik.yaml:/etc/traefik/traefik.yaml
+      - ./Traefik/config/dynamic:/etc/traefik/dynamic
+    depends_on:
+      - web
+    networks:
+      - perfectly-balanced
   web:
     container_name: ostchat-web
     build:
@@ -8,15 +22,20 @@ services:
       target: ${TARGET:-development}
     restart: "no"
     working_dir: /usr/app
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ostchat.entrypoints=web"
+      - "traefik.http.routers.ostchat.rule=PathPrefix(`/`)"
     volumes:
       - ./Website/:/usr/app/
       - /usr/app/node_modules
     ports:
-      - "3030:3030"
+      - "3030"
     depends_on:
       - db
     networks:
       - ostchat-backend-db
+      - perfectly-balanced
   db:
     container_name: ostchat-database
     build:
@@ -55,10 +74,14 @@ services:
 volumes:
   ostchat-pgadmin:
 
+
 networks:
   ostchat-backend-db:
     ipam:
       driver: default
   ostchat-db-pgadmin4:
+    ipam:
+      driver: default
+  perfectly-balanced:
     ipam:
       driver: default
