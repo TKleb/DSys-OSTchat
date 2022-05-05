@@ -3,7 +3,7 @@
             <h1>OST Chat</h1>
         </header>
         <main class="login-main">
-            <form action="chat.html">
+            <form>
                 <div class="login-form-div">
                     <label for="username">Username</label>
                     <input type="text" name="username"
@@ -14,7 +14,7 @@
                     <label for="chatrooms"></label>
                     {{#each rooms}}
                         <button type="submit" 
-                            href="/chat/{{id}}" 
+                            formaction="/chat/{{id}}" 
                             name="chatroom-selection" 
                             value="{{room_name}}"
                             class="chat-select-btn"
