@@ -50,9 +50,10 @@ function socketFunction() {
             console.log(roomList);
             client.query("SELECT * FROM add_user($1)", [username], (err, result) => {
                 if (err) {
-                    console.log('Error executing query', err.stack)
+                    console.log('Error executing query:', err.stack)
+                    return;
                 }
-                if (result.rowCount === 1) {
+                else if (result.rowCount === 1) {
                     const userid = result.rows[0].id
                     const user = addUserToList(userid, username, room, socket.id);
                     socket.join(user.roomname);
@@ -63,9 +64,12 @@ function socketFunction() {
                             users: getAllUsersForRoom(user.roomname)
                         }
                     )
-                    client.query("SELECT * FROM get_messages(1)", [], (err, result) => {
+                    const currentRoomElement = roomList.find(element => element.room_name === user.roomname)
+                    const currentRoomId = currentRoomElement.id
+                    client.query("SELECT * FROM get_messages($1)", [currentRoomId], (err, result) => {
                         if (err) {
-                            console.log('Error executing query', err.stack)
+                            console.log('Error executing query', err.stack);
+                            return;
                         } else {
                             const previousMessages = result.rows;
                             for (msg of previousMessages) {
