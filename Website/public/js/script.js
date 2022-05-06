@@ -43,6 +43,7 @@ function displayRoomName(room) {
 
 function displayActiveInfo(room, users) {
     roomList.innerText = room;
+    currentUser.innerText = username
     userList.innerHTML = '';
     users.forEach((user) => {
         const listElement = document.createElement('li');

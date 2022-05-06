@@ -76,6 +76,10 @@ body {
     font-weight: bold;
 }
 
+.chat-side ul {
+    list-style-type: none;
+}
+
 .chat-sidebar ul li {
     padding: 10px 0;
 }
@@ -169,19 +173,17 @@ body {
     font-size: 15px;
     padding: 5px;
     height: 40px;
-    width: 100%;
+    width: 95%;
 }
 
-.login-main select {
-    font-size: 15px;
-    padding: 5px;
-    height: 40px;
-    width: 100%;
+#chat-room-select {
+      position: relative; 
 }
 
-.login-main .button {
-    margin-top: 20px;
-    width: 100%;
+.chat-select-btn {
+    display: inline-block;
+    cursor: pointer;
+    height: 30px;
 }
 
 @media (max-width: 700px) {

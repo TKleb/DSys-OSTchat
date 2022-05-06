@@ -10,8 +10,8 @@
                            id="username" placeholder="Enter a Username" required autofocus autocomplete="off"
                     />
                 </div>
-                <div class="login-form-div">
-                    <label for="chatrooms"></label>
+                <div class="login-form-div" id="chat-room-select">
+                    <label for="chatrooms">Select a Chatroom</label>
                     {{#each rooms}}
                         <button type="submit" 
                             formaction="/chat/{{id}}" 
