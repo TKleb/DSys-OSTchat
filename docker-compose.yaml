@@ -2,19 +2,27 @@ version: '3.9'
 
 services:
   loadbalancer:
-    build:
-      context: ./Traefik
+    image: traefik:v2.6
+    container_name: traefik
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.watch=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
     ports:
       - 80:80
+      - 443:443
       - 8080:8080
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./Traefik/config/traefik.yaml:/etc/traefik/traefik.yaml
-      - ./Traefik/config/dynamic:/etc/traefik/dynamic
+      #- ./letsencrypt:/letsencrypt
+      #- ./Traefik/config/traefik.yaml:/etc/traefik/traefik.yaml
     depends_on:
       - web
     networks:
-      - perfectly-balanced
+      - web
   web:
     container_name: ostchat-web
     build:
@@ -23,19 +31,21 @@ services:
     restart: "no"
     working_dir: /usr/app
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.ostchat.entrypoints=web"
-      - "traefik.http.routers.ostchat.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.myproject.rule=PathPrefix(`/`)"
+      # Here we are defining wich entrypoint should be used by clients to access this service
+      - "traefik.http.routers.myproject.entrypoints=web"
+      # Here we define in wich network treafik can find this service
+      - "traefik.docker.network=web"
+      # This is the port that traefik should proxy
+      - "traefik.http.services.myproject.loadbalancer.server.port=3030"
     volumes:
       - ./Website/:/usr/app/
       - /usr/app/node_modules
-    ports:
-      - "3030"
     depends_on:
       - db
     networks:
+      - web
       - ostchat-backend-db
-      - perfectly-balanced
   db:
     container_name: ostchat-database
     build:
@@ -82,6 +92,6 @@ networks:
   ostchat-db-pgadmin4:
     ipam:
       driver: default
-  perfectly-balanced:
+  web:
     ipam:
       driver: default
