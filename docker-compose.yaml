@@ -1,28 +1,23 @@
 version: '3.9'
 
 services:
-  loadbalancer:
+  traefik:
     image: traefik:v2.6
     container_name: traefik
-    command:
-      - "--log.level=DEBUG"
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.watch=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
+    hostname: traefik
+    networks:
+      - public
     ports:
       - 80:80
       - 443:443
       - 8080:8080
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./Traefik/config/traefik.yaml:/traefik.yaml:ro
+      - ./Traefik/config/dynamic:/dynamic:ro
       #- ./letsencrypt:/letsencrypt
       #- ./Traefik/config/traefik.yaml:/etc/traefik/traefik.yaml
-    depends_on:
-      - web
-    networks:
-      - web
+
   web:
     container_name: ostchat-web
     build:
@@ -31,21 +26,21 @@ services:
     restart: "no"
     working_dir: /usr/app
     labels:
-      - "traefik.http.routers.myproject.rule=PathPrefix(`/`)"
+      - traefik.enable=true
+      - traefik.http.routers.web.rule=Host(`web.$MY_DOMAIN`)
       # Here we are defining wich entrypoint should be used by clients to access this service
-      - "traefik.http.routers.myproject.entrypoints=web"
+      - traefik.http.routers.web.entrypoints=web
       # Here we define in wich network treafik can find this service
-      - "traefik.docker.network=web"
-      # This is the port that traefik should proxy
-      - "traefik.http.services.myproject.loadbalancer.server.port=3030"
+      - traefik.docker.network=$DEFAULT_NETWORK
     volumes:
       - ./Website/:/usr/app/
       - /usr/app/node_modules
     depends_on:
       - db
     networks:
-      - web
+      - public
       - ostchat-backend-db
+
   db:
     container_name: ostchat-database
     build:
@@ -81,9 +76,16 @@ services:
     depends_on:
       - db
 
-volumes:
-  ostchat-pgadmin:
-
+  whoami:
+    image: containous/whoami
+    container_name: whoami
+    hostname: whoami
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.whoami.entrypoints=web
+      - traefik.http.routers.whoami.rule=Host(`whoami.$MY_DOMAIN`)
+    networks:
+      - public
 
 networks:
   ostchat-backend-db:
@@ -92,6 +94,10 @@ networks:
   ostchat-db-pgadmin4:
     ipam:
       driver: default
-  web:
+  public:
+    name: $DEFAULT_NETWORK
     ipam:
       driver: default
+
+volumes:
+  ostchat-pgadmin:
