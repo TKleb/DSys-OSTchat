@@ -1,6 +1,23 @@
 version: '3.9'
 
 services:
+  traefik:
+    image: traefik:v2.6
+    container_name: traefik
+    hostname: traefik
+    networks:
+      - public
+    ports:
+      - 80:80
+      - 443:443
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./Traefik/config/traefik.yaml:/traefik.yaml:ro
+      - ./Traefik/config/dynamic:/dynamic:ro
+      #- ./letsencrypt:/letsencrypt
+      #- ./Traefik/config/traefik.yaml:/etc/traefik/traefik.yaml
+
   web:
     container_name: ostchat-web
     build:
@@ -8,15 +25,22 @@ services:
       target: ${TARGET:-development}
     restart: "no"
     working_dir: /usr/app
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.web.rule=Host(`web.$MY_DOMAIN`)
+      # Here we are defining wich entrypoint should be used by clients to access this service
+      - traefik.http.routers.web.entrypoints=web
+      # Here we define in wich network treafik can find this service
+      - traefik.docker.network=$DEFAULT_NETWORK
     volumes:
       - ./Website/:/usr/app/
       - /usr/app/node_modules
-    ports:
-      - "3030:3030"
     depends_on:
       - db
     networks:
+      - public
       - ostchat-backend-db
+
   db:
     container_name: ostchat-database
     build:
@@ -52,8 +76,16 @@ services:
     depends_on:
       - db
 
-volumes:
-  ostchat-pgadmin:
+  whoami:
+    image: containous/whoami
+    container_name: whoami
+    hostname: whoami
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.whoami.entrypoints=web
+      - traefik.http.routers.whoami.rule=Host(`whoami.$MY_DOMAIN`)
+    networks:
+      - public
 
 networks:
   ostchat-backend-db:
@@ -62,3 +94,10 @@ networks:
   ostchat-db-pgadmin4:
     ipam:
       driver: default
+  public:
+    name: $DEFAULT_NETWORK
+    ipam:
+      driver: default
+
+volumes:
+  ostchat-pgadmin:

@@ -4,7 +4,7 @@
 # Shared base image
 ################################################################################
 # Get latest node-alpine
-FROM node:17.7.1-alpine3.15 as base
+FROM node:17.9-alpine3.15 as base
 RUN apk update && apk upgrade
 WORKDIR /usr/app
 

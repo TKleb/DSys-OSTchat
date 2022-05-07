@@ -65,3 +65,34 @@ AS $$
 $$;
 
 GRANT ALL ON FUNCTION post_message TO backend;
+
+--------------------------------------------------------------------------------
+-- Fetch Messages in Room
+CREATE OR REPLACE FUNCTION get_messages_after(p_room_id INT, p_message_id INT)
+    RETURNS TABLE (
+        id        INTEGER,
+        sender_id INT,
+        sender_name VARCHAR,
+        room_id   INT,
+        content   VARCHAR,
+        tmstmp VARCHAR
+    )
+    LANGUAGE plpgsql
+    SECURITY DEFINER
+AS $$
+    BEGIN
+        RETURN QUERY
+        SELECT  message_id,
+                message_sender_id,
+                user_username AS sender_name,
+                message_room_id,
+                message_content,
+                message_timestamp
+        FROM messages
+        JOIN users on user_id = message_sender_id
+        WHERE messages.message_room_id = p_room_id
+        AND messages.message_id > p_message_id;
+    END
+$$;
+
+GRANT ALL ON FUNCTION get_messages_after TO backend;

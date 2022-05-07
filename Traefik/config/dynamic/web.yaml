@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=https://json.schemastore.org/traefik-v2.json
+#http:
+#  routers:
+#    route-to-local-ip:
+#      rule: "Host(`web.localhost`)"
+#      service: route-to-local-ip-service
+#      priority: 1000
+#      entryPoints:
+#        - web
+#
+#  services:
+#    website_frontend:
+#      loadBalancer:
+#        servers:
+#          - p
+#          - url: "http://10.0.19.5:80"

@@ -57,6 +57,12 @@ $room_tests$ BEGIN
     ) THEN
         RAISE EXCEPTION 'get_messages failed';
     END IF;
+
+    IF NOT EXISTS(
+        SELECT * FROM get_messages_after(1, 0)
+    ) THEN
+        RAISE EXCEPTION 'get_messages failed';
+    END IF;
 END $room_tests$;
 
 -- Cleanup

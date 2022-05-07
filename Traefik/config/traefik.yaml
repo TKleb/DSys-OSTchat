@@ -1,0 +1,29 @@
+# DAMN YOU UN-DEBUGGABLE SCRIPT FILES
+# https://github.com/DoTheEvo/Traefik-v2-examples
+global:
+  checkNewVersion: true
+
+entryPoints:
+  web:
+    address: :80
+  websecure:
+    address: :443
+
+log:
+  level: INFO
+  #format: json
+
+api:
+  insecure: true
+  dashboard: true
+
+ping:
+  entryPoint: traefik
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    #    endpoint: tcp://10.10.10.10:2375
+    exposedByDefault: false
+  file:
+    directory: "./dynamic"
