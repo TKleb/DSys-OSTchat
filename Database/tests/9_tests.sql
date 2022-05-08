@@ -19,6 +19,18 @@ $user_tests$ BEGIN
     ) THEN
         RAISE EXCEPTION 'get_user_by_id failed';
     END IF;
+
+    IF NOT EXISTS(
+        SELECT * FROM get_or_add_user('Joeff')
+    ) THEN
+        RAISE EXCEPTION 'get_user_by_id failed';
+    END IF;
+    
+    IF NOT EXISTS(
+        SELECT * FROM get_or_add_user('Joeff')
+    ) THEN
+        RAISE EXCEPTION 'get_user_by_id failed';
+    END IF;
 END $user_tests$;
 
 -- Room Tests

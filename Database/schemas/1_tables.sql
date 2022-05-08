@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------
 CREATE TABLE users (
-    user_id          INTEGER UNIQUE GENERATED ALWAYS AS IDENTITY,
-    user_username    VARCHAR UNIQUE NOT NULL
+    id          INTEGER UNIQUE GENERATED ALWAYS AS IDENTITY,
+    username    VARCHAR UNIQUE NOT NULL
 ) TABLESPACE pg_default;
 
 --------------------------------------------------------------------------------
@@ -20,7 +20,7 @@ CREATE TABLE messages
     message_timestamp       VARCHAR NOT NULL,
     CONSTRAINT fk_sender
       FOREIGN KEY(message_sender_id)
-      REFERENCES users(user_id),
+      REFERENCES users(id),
     CONSTRAINT fk_room
       FOREIGN KEY(message_room_id)
       REFERENCES rooms(room_id) ON DELETE CASCADE
