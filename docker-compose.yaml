@@ -22,13 +22,14 @@ services:
       #- ./letsencrypt:/letsencrypt
       #- ./Traefik/config/traefik.yaml:/etc/traefik/traefik.yaml
 
-  web:
+  oschat-web:
     deploy:
       replicas: 3
+      restart_policy:
+        condition: on-failure
     build:
       context: ./Website
       target: ${TARGET:-development}
-    restart: "no"
     working_dir: /usr/app
     labels:
       - traefik.enable=true
