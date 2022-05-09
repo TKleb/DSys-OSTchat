@@ -19,7 +19,8 @@ services:
       #- ./Traefik/config/traefik.yaml:/etc/traefik/traefik.yaml
 
   web:
-    container_name: ostchat-web
+    deploy:
+      replicas: 3
     build:
       context: ./Website
       target: ${TARGET:-development}
@@ -32,6 +33,7 @@ services:
       - traefik.http.routers.web.entrypoints=web
       # Here we define in wich network treafik can find this service
       - traefik.docker.network=$DEFAULT_NETWORK
+      - traefik.http.services.web.loadBalancer.sticky.cookie=true
     volumes:
       - ./Website/:/usr/app/
       - /usr/app/node_modules
@@ -82,8 +84,9 @@ services:
 
   whoami:
     image: containous/whoami
-    container_name: whoami
     hostname: whoami
+    deploy:
+      replicas: 3
     labels:
       - traefik.enable=true
       - traefik.http.routers.whoami.entrypoints=web
