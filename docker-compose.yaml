@@ -1,3 +1,7 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+# Userful links:
+# Swam: https://docs.docker.com/compose/compose-file/deploy/
+
 version: '3.9'
 
 services:
