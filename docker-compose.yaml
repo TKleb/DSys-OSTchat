@@ -88,18 +88,6 @@ services:
     depends_on:
       - db
 
-  whoami:
-    image: containous/whoami
-    hostname: whoami
-    deploy:
-      replicas: 3
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.whoami.entrypoints=web
-      - traefik.http.routers.whoami.rule=Host(`whoami.$MY_DOMAIN`)
-    networks:
-      - public
-
 networks:
   ostchat-backend-db:
     ipam:
