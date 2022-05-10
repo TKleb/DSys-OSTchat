@@ -37,7 +37,7 @@ services:
       # Here we are defining wich entrypoint should be used by clients to access this service
       - traefik.http.routers.web.entrypoints=web
       # Here we define in wich network treafik can find this service
-      - traefik.docker.network=$DEFAULT_NETWORK
+      - traefik.docker.network=$LOAD_BALANCED_NETWORK
       - traefik.http.services.web.loadBalancer.sticky.cookie=true
     volumes:
       - /etc/localtime:/etc/localtime:ro
@@ -79,7 +79,7 @@ services:
       - traefik.enable=true
       - traefik.http.routers.pgadmin.entrypoints=web
       - traefik.http.routers.pgadmin.rule=Host(`pgadmin.$MY_DOMAIN`)
-      - traefik.docker.network=$DEFAULT_NETWORK
+      - traefik.docker.network=$LOAD_BALANCED_NETWORK
     volumes:
       - ostchat-pgadmin:/var/lib/pgadmin
     networks:
@@ -96,7 +96,7 @@ networks:
     ipam:
       driver: default
   public:
-    name: $DEFAULT_NETWORK
+    name: $LOAD_BALANCED_NETWORK
     ipam:
       driver: default
 
