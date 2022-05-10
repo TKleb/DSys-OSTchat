@@ -6,7 +6,8 @@ version: '3.9'
 
 services:
   traefik:
-    image: traefik:v2.6
+    build:
+      context: Traefik
     container_name: traefik
     hostname: traefik
     networks:
@@ -17,8 +18,6 @@ services:
       - 8080:8080
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./Traefik/config/traefik.yaml:/traefik.yaml:ro
-      - ./Traefik/config/dynamic:/dynamic:ro
       #- ./letsencrypt:/letsencrypt
       #- ./Traefik/config/traefik.yaml:/etc/traefik/traefik.yaml
 
@@ -41,7 +40,6 @@ services:
       - traefik.http.services.web.loadBalancer.sticky.cookie=true
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./Website/:/usr/app/
       - /usr/app/node_modules
     depends_on:
       - db
