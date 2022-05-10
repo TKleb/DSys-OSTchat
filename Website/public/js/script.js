@@ -21,9 +21,13 @@ const username = getQueryVariable("username");
 const room = getQueryVariable("chatroom-selection")
 
 // Socket Stuff
-let socket = io();
+let socket = io({reconnectionDelayMax: 2000});
 
-socket.emit('userJoin', { username, room });
+function connectToServer(){
+    socket.emit('userJoin', { username, room });
+}
+
+connectToServer();
 
 socket.on('chatMessage', (message) => {
     displayMessage(message);
@@ -33,6 +37,14 @@ socket.on('chatMessage', (message) => {
 
 socket.on('currentUsers', ({ room, users }) => {
     displayActiveInfo(room, users);
+})
+
+socket.on('disconnect', (reason) => {
+    console.log('Disconnected:', reason);
+    if (reason === 'transport close'){
+        connectToServer();
+        console.log('Disconnect from current node, possibly down.');
+    }
 })
 
 // UI Stuff

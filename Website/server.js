@@ -166,7 +166,12 @@ function socketFunction() {
         })
 
         socket.on('userMessage', message => {
+            console.log('Received message from user:', message);
             const user = getTypingUser(socket.id);
+            if (user === undefined){
+                console.log('Received message from unknown user.');
+                return;
+            }
             const currentRoomElement = roomList.find(element => element.room_name === user.room_name)
             const currentRoomId = currentRoomElement.id
             return client.query("SELECT * FROM post_message($1, $2, $3)", [user.id, currentRoomId, message]);
