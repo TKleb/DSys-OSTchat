@@ -1,7 +1,7 @@
 const activeUsers = []
 
-function addUserToList(id, username, roomname, socketid) {
-    const user = { id, username, roomname, socketid };
+function addUserToList(id, username, room_name, socketid) {
+    const user = { id, username, room_name, socketid };
     activeUsers.push(user);
     return user;
 }
@@ -13,9 +13,9 @@ function removeUserFromList(username) {
     activeUsers.splice(index, 1);
 }
 
-// TODO: roomname -> roomid
+// TODO: room_name -> roomid
 function getAllUsersForRoom(room) {
-    return activeUsers.filter(user => user.roomname === room)
+    return activeUsers.filter(user => user.room_name === room)
 }
 
 function getTypingUser(id) {
@@ -23,6 +23,7 @@ function getTypingUser(id) {
 }
 
 export {
+    activeUsers,
     removeUserFromList,
     addUserToList,
     getTypingUser,

@@ -26,7 +26,7 @@ let socket = io();
 socket.emit('userJoin', { username, room });
 
 socket.on('chatMessage', (message) => {
-    displayMessage(message)
+    displayMessage(message);
 
     chatMessages.scrollTop = chatMessages.scrollHeight;
 })
@@ -73,6 +73,7 @@ messageForm.addEventListener('submit', (e) => {
     let message = e.target.elements.message.value;
 
     socket.emit('userMessage', message);
+    console.log("Submitted:", message);
 
     e.target.elements.message.value = '';
     e.target.elements.message.focus();

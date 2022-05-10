@@ -7,11 +7,11 @@ function dateConversion(isoTime) {
     return date.getHours() + ":" + minutes;
 }
 
-function messageFormat(username, text, time) {
+function messageFormat(username, text, isoTime) {
     return {
         username,
         text,
-        time: dateConversion(time)
+        time: dateConversion(isoTime)
     }
 }
 

@@ -6,7 +6,7 @@ import express from 'express';
 import exphbs from 'express-handlebars';
 import { Server } from 'socket.io';
 import {chatRoutes} from "./router/chat-routes.js";
-import { addUserToList, removeUserFromList, getTypingUser, getAllUsersForRoom } from "./controller/user-controller.js";
+import { addUserToList, removeUserFromList, getTypingUser, getAllUsersForRoom, activeUsers } from "./controller/user-controller.js";
 import { messageFormat } from "./controller/message-controller.js";
 
 const PORT = 3030;
@@ -85,6 +85,11 @@ function updateMessageMap() {
             const messages = entry.messages;
             allMessages.set(roomId,
                 allMessages.get(roomId).concat(messages));
+                messages.forEach((message) => {
+                    const room_name = roomList.find(room => room.id === roomId).room_name;
+                    io.to(room_name).emit('chatMessage', messageFormat(message.sender_name, message.content, message.tmstmp));
+                    console.log("New message:", messageFormat(message.sender_name, message.content, message.tmstmp), "Room:", roomId);
+                });
         })
     })
 }
@@ -107,7 +112,7 @@ getRoomLists().then((result) => {
             const messages = entry.messages;
             allMessages.set(roomId, messages);
         })
-        setInterval(() => updateMessageMap(), 500);
+        setInterval(() => updateMessageMap(), 100);
         socketFunction();
     });
 })
@@ -128,15 +133,15 @@ function socketFunction() {
                 else if (result.rowCount === 1) {
                     const userid = result.rows[0].id
                     const user = addUserToList(userid, username, room, socket.id);
-                    socket.join(user.roomname);
+                    socket.join(user.room_name);
                     console.log('User joined:', user);
-                    io.to(user.roomname).emit('currentUsers',
+                    io.to(user.room_name).emit('currentUsers',
                         {
-                            room: user.roomname,
-                            users: getAllUsersForRoom(user.roomname)
+                            room: user.room_name,
+                            users: getAllUsersForRoom(user.room_name)
                         }
                     )
-                    const currentRoomElement = roomList.find(element => element.room_name === user.roomname);
+                    const currentRoomElement = roomList.find(element => element.room_name === user.room_name);
                     const currentRoomId = currentRoomElement.id;
                     const currentRoomMessages = allMessages.get(currentRoomId);
                     currentRoomMessages.forEach((msg) => {
@@ -162,11 +167,9 @@ function socketFunction() {
 
         socket.on('userMessage', message => {
             const user = getTypingUser(socket.id);
-            const currentTime = new Date();
-            const currentRoomElement = roomList.find(element => element.room_name === user.roomname)
+            const currentRoomElement = roomList.find(element => element.room_name === user.room_name)
             const currentRoomId = currentRoomElement.id
-            client.query("SELECT * FROM post_message($1, $2, $3)", [user.id, currentRoomId, message])
-            io.to(user.roomname).emit('chatMessage', messageFormat(user.username, message, currentTime))
+            return client.query("SELECT * FROM post_message($1, $2, $3)", [user.id, currentRoomId, message]);
         })
     })
 }
