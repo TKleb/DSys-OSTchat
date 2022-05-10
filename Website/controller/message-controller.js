@@ -1,21 +1,20 @@
-function currentDate() {
-    const now = new Date();
-    let minutes = now.getMinutes();
+function dateConversion(isoTime) {
+    const date = new Date(isoTime);
+    let minutes = date.getMinutes();
     if (minutes < 10) {
         minutes = "0" + minutes;
     }
-    return (now.getHours() + (2)) + ":" + minutes;
+    return date.getHours() + ":" + minutes;
 }
 
-function messageFormat(username, text) {
+function messageFormat(username, text, time) {
     return {
         username,
         text,
-        time: currentDate()
+        time: dateConversion(time)
     }
 }
 
 export {
-    messageFormat,
-    currentDate
+    messageFormat
 };

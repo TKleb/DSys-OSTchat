@@ -49,20 +49,68 @@ const client = new Pool({
 })
 
 let roomList = []
+let allMessages = new Map();
 
 function getRoomLists() {
-    let roomList = client.query("SELECT * FROM get_rooms()", [])
-    return roomList
+    let roomList = client.query("SELECT * FROM get_rooms()", []);
+    return roomList;
+}
+
+function getMessages(roomId) {
+    return client.query("SELECT * FROM get_messages($1)", [roomId]);
+}
+
+function getMessagesAfter(roomId, messageId) {
+    return client.query("SELECT * FROM get_messages_after($1, $2)", [roomId, messageId]);
+}
+
+function updateMessageMap() {
+    const roomIds = [...allMessages.keys()];
+    let promises = [];
+    roomIds.forEach((roomId) => {
+        const messagesOfRoom = allMessages.get(roomId);
+        let newestMessage = -1;
+        if (messagesOfRoom.length > 0) {
+            newestMessage = messagesOfRoom[messagesOfRoom.length - 1].id;
+        }
+        promises.push(
+            getMessagesAfter(roomId, newestMessage).then((result) => {
+                const messages = result.rows;
+                return { roomId, messages };
+            }));
+        })
+    Promise.all(promises).then((result) => {
+        result.forEach((entry) => {
+            const roomId = entry.roomId;
+            const messages = entry.messages;
+            allMessages.set(roomId,
+                allMessages.get(roomId).concat(messages));
+        })
+    })
 }
 
 getRoomLists().then((result) => {
     roomList = result.rows
-    socketFunction()
+    let promises = []
+    roomList.forEach((room) => {
+        const roomId = room.id;
+        promises.push(
+            getMessages(roomId).then((result) => {
+                const messages = result.rows;
+                return { roomId, messages };
+            })
+        )
+    });
+    Promise.all(promises).then((result) => {
+        result.forEach((entry) => {
+            const roomId = entry.roomId;
+            const messages = entry.messages;
+            allMessages.set(roomId, messages);
+        })
+        setInterval(() => updateMessageMap(), 500);
+        socketFunction();
+    });
 })
-
-function getMessages(roomId, user) {
-    
-}
 
 function socketFunction() {
     io.on('connection', socket => {
@@ -90,19 +138,10 @@ function socketFunction() {
                     )
                     const currentRoomElement = roomList.find(element => element.room_name === user.roomname);
                     const currentRoomId = currentRoomElement.id;
-                    //setInterval(() => getMessages(currentRoomId, user), 500)
-                    client.query("SELECT * FROM get_messages($1)", [currentRoomId], (err, result) => {
-                        if (err) {
-                            console.log('Error executing query', err.stack);
-                            return;
-                        } else {
-                            const previousMessages = result.rows;
-                            previousMessages.forEach((msg) => {
-                                // TODO: ensure only joining user receives these messages
-                                io.to(user.roomname).emit('chatMessage', messageFormat(msg.sender_name, msg.content))
-                            }) 
-                        }
-                        
+                    const currentRoomMessages = allMessages.get(currentRoomId);
+                    currentRoomMessages.forEach((msg) => {
+                        // TODO: ensure only joining user receives these messages
+                        socket.emit('chatMessage', messageFormat(msg.sender_name, msg.content, msg.tmstmp))
                     })
                 } else {
                     console.log('Unexpected reply from database. User was expected.', result);
@@ -123,10 +162,11 @@ function socketFunction() {
 
         socket.on('userMessage', message => {
             const user = getTypingUser(socket.id);
+            const currentTime = new Date();
             const currentRoomElement = roomList.find(element => element.room_name === user.roomname)
             const currentRoomId = currentRoomElement.id
             client.query("SELECT * FROM post_message($1, $2, $3)", [user.id, currentRoomId, message])
-            io.to(user.roomname).emit('chatMessage', messageFormat(user.username, message))
+            io.to(user.roomname).emit('chatMessage', messageFormat(user.username, message, currentTime))
         })
     })
 }
