@@ -59,7 +59,7 @@ END $room_tests$;
 DO
 $room_tests$ BEGIN
     IF NOT EXISTS(
-        SELECT * FROM post_message(1, 1, 'Sample message test', '2022-04-17')
+        SELECT * FROM post_message(1, 1, 'Sample message test')
     ) THEN
         RAISE EXCEPTION 'post_message failed';
     END IF;

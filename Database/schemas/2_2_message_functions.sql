@@ -2,12 +2,12 @@
 -- Fetch Messages in Room
 CREATE OR REPLACE FUNCTION get_messages(p_room_id INT)
     RETURNS TABLE (
-        id        INTEGER,
-        sender_id INT,
+        id          INTEGER,
+        sender_id   INT,
         sender_name VARCHAR,
-        room_id   INT,
-        content   VARCHAR,
-        tmstmp VARCHAR
+        room_id     INT,
+        content     VARCHAR,
+        tmstmp      TIMESTAMP WITH TIME ZONE
     )
     LANGUAGE plpgsql
     SECURITY DEFINER
@@ -30,13 +30,13 @@ GRANT ALL ON FUNCTION get_messages TO backend;
 
 --------------------------------------------------------------------------------
 -- Post message to room as user
-CREATE OR REPLACE FUNCTION post_message(p_sender_id INT, p_room_id INT, p_message_content VARCHAR, p_message_timestamp VARCHAR)
+CREATE OR REPLACE FUNCTION post_message(p_sender_id INT, p_room_id INT, p_message_content VARCHAR)
     RETURNS TABLE (
         id        INTEGER,
         sender_id INT,
         room_id   INT,
         content   VARCHAR,
-        tmstmp VARCHAR
+        tmstmp    TIMESTAMP WITH TIME ZONE
     )
     LANGUAGE plpgsql
     SECURITY DEFINER
@@ -53,7 +53,7 @@ AS $$
             p_sender_id,
             p_room_id,
             p_message_content,
-            p_message_timestamp
+            NOW()
         )
         RETURNING
             message_id AS id,
@@ -70,12 +70,12 @@ GRANT ALL ON FUNCTION post_message TO backend;
 -- Fetch Messages in Room
 CREATE OR REPLACE FUNCTION get_messages_after(p_room_id INT, p_message_id INT)
     RETURNS TABLE (
-        id        INTEGER,
-        sender_id INT,
+        id          INTEGER,
+        sender_id   INT,
         sender_name VARCHAR,
-        room_id   INT,
-        content   VARCHAR,
-        tmstmp VARCHAR
+        room_id     INT,
+        content     VARCHAR,
+        tmstmp      TIMESTAMP WITH TIME ZONE
     )
     LANGUAGE plpgsql
     SECURITY DEFINER

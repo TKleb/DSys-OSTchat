@@ -17,7 +17,7 @@ CREATE TABLE messages
     message_sender_id       INT NOT NULL,
     message_room_id         INT NOT NULL,
     message_content         VARCHAR NOT NULL,
-    message_timestamp       VARCHAR NOT NULL,
+    message_timestamp       TIMESTAMP WITH TIME ZONE NOT NULL,
     CONSTRAINT fk_sender
       FOREIGN KEY(message_sender_id)
       REFERENCES users(id),

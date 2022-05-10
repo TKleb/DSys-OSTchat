@@ -40,6 +40,7 @@ services:
       - traefik.docker.network=$DEFAULT_NETWORK
       - traefik.http.services.web.loadBalancer.sticky.cookie=true
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ./Website/:/usr/app/
       - /usr/app/node_modules
     depends_on:
