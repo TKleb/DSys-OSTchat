@@ -3,6 +3,7 @@ const roomList = document.getElementById('room-name');
 const currentUser = document.getElementById('currentUser');
 const userList = document.getElementById('users');
 const chatMessages = document.querySelector('.message-display');
+const logoutButton = document.getElementById('logout-button');
 
 function getQueryVariable(variable) {
     let query = window.location.search.substring(1);
@@ -25,7 +26,6 @@ let socket = io();
 socket.emit('userJoin', { username, room });
 
 socket.on('chatMessage', (message) => {
-    console.log(message)
     displayMessage(message)
 
     chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -44,12 +44,6 @@ function displayRoomName(room) {
 function displayActiveInfo(room, users) {
     roomList.innerText = room;
     currentUser.innerText = username
-    userList.innerHTML = '';
-    users.forEach((user) => {
-        const listElement = document.createElement('li');
-        listElement.innerText = user.username;
-        userList.appendChild(listElement);
-    })
 }
 
 function displayMessage(message) {
@@ -82,4 +76,8 @@ messageForm.addEventListener('submit', (e) => {
 
     e.target.elements.message.value = '';
     e.target.elements.message.focus();
+})
+
+logoutButton.addEventListener('click', () => {
+    socket.emit('userLeave', { username, room });
 })

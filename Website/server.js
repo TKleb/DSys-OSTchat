@@ -6,8 +6,8 @@ import express from 'express';
 import exphbs from 'express-handlebars';
 import { Server } from 'socket.io';
 import {chatRoutes} from "./router/chat-routes.js";
-import { addUserToList, getTypingUser, getAllUsersForRoom } from "./controller/user-controller.js";
-import { messageFormat, currentDate } from "./controller/message-controller.js";
+import { addUserToList, removeUserFromList, getTypingUser, getAllUsersForRoom } from "./controller/user-controller.js";
+import { messageFormat } from "./controller/message-controller.js";
 
 const PORT = 3030;
 const HOSTNAME = '0.0.0.0'
@@ -60,6 +60,10 @@ getRoomLists().then((result) => {
     socketFunction()
 })
 
+function getMessages(roomId, user) {
+    
+}
+
 function socketFunction() {
     io.on('connection', socket => {
         console.log("connection worked")
@@ -68,7 +72,7 @@ function socketFunction() {
                 console.log('Error!');
                 return;
             }
-            client.query("SELECT * FROM add_user($1)", [username], (err, result) => {
+            client.query("SELECT * FROM get_or_add_user($1)", [username], (err, result) => {
                 if (err) {
                     console.log('Error executing query:', err.stack)
                     return;
@@ -84,8 +88,9 @@ function socketFunction() {
                             users: getAllUsersForRoom(user.roomname)
                         }
                     )
-                    const currentRoomElement = roomList.find(element => element.room_name === user.roomname)
-                    const currentRoomId = currentRoomElement.id
+                    const currentRoomElement = roomList.find(element => element.room_name === user.roomname);
+                    const currentRoomId = currentRoomElement.id;
+                    //setInterval(() => getMessages(currentRoomId, user), 500)
                     client.query("SELECT * FROM get_messages($1)", [currentRoomId], (err, result) => {
                         if (err) {
                             console.log('Error executing query', err.stack);
@@ -97,6 +102,7 @@ function socketFunction() {
                                 io.to(user.roomname).emit('chatMessage', messageFormat(msg.sender_name, msg.content))
                             }) 
                         }
+                        
                     })
                 } else {
                     console.log('Unexpected reply from database. User was expected.', result);
@@ -104,15 +110,22 @@ function socketFunction() {
             })
         })
 
+        socket.on('userLeave', ({ username, room }) => {
+            try {
+                removeUserFromList(username);
+                socket.leave(room);
+                socket.to(room).emit('user left', socket.id)
+            } catch(e) {
+                console.log("ERROR with LOGOUT", e)
+                socket.emit('error', 'couldnt perform requested action')
+            }
+        })
+
         socket.on('userMessage', message => {
-            console.log(socket.id)
             const user = getTypingUser(socket.id);
-            const currentTime = currentDate()
             const currentRoomElement = roomList.find(element => element.room_name === user.roomname)
             const currentRoomId = currentRoomElement.id
-            // fuck this shit room id hardcoded to be 1
-            // todo dont do this shit
-            client.query("SELECT * FROM post_message($1, $4, $2, $3)", [user.id, message, currentTime, currentRoomId])
+            client.query("SELECT * FROM post_message($1, $2, $3)", [user.id, currentRoomId, message])
             io.to(user.roomname).emit('chatMessage', messageFormat(user.username, message))
         })
     })
