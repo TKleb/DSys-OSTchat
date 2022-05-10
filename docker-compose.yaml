@@ -24,6 +24,7 @@ services:
   oschat-web:
     deploy:
       replicas: 3
+      mode: global
       restart_policy:
         condition: on-failure
     build:
@@ -32,7 +33,7 @@ services:
     working_dir: /usr/app
     labels:
       - traefik.enable=true
-      - traefik.http.routers.web.rule=Host(`web.$MY_DOMAIN`)
+      - traefik.http.routers.web.rule=Host(`$MY_DOMAIN`)
       # Here we are defining wich entrypoint should be used by clients to access this service
       - traefik.http.routers.web.entrypoints=web
       # Here we define in wich network treafik can find this service
