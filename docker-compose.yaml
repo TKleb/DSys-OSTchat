@@ -6,7 +6,8 @@ version: '3.9'
 
 services:
   traefik:
-    image: traefik:v2.6
+    build:
+      context: Traefik
     container_name: traefik
     hostname: traefik
     networks:
@@ -15,17 +16,6 @@ services:
       - 80:80
       - 443:443
       - 8080:8080
-    labels:
-      # Traefik.yaml
-      - entrypoints.web.address=:80
-      - entrypoints.websecure.address=:443
-      - log.level=DEBUG
-      #
-      - certificatesResolvers.letsencrypt.acme.email=${EMAIL}
-      - certificatesResolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
-      - certificatesResolvers.letsencrypt.acme.httpchallenge.entrypoint=web
-      # Debug purposes - comment out in production
-      - certificatesResolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
     volumes:
       - /ostchat/traefik/letsencrypt/acme.json:/letsencrypt/acme.json:rw
       - /var/run/docker.sock:/var/run/docker.sock:ro

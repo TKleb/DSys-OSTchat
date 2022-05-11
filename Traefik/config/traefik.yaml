@@ -1,3 +1,43 @@
 # DAMN YOU UN-DEBUGGABLE SCRIPT FILES
 # https://github.com/DoTheEvo/Traefik-v2-examples
 # Complete guide: https://traefik.io/blog/traefik-2-tls-101-23b4fbee81f1/
+global:
+  checkNewVersion: true
+
+entryPoints:
+  web:
+    address: :80
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+  websecure:
+    address: :443
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: dominic.walther@ost.ch
+      storage: /letsencrypt/acme.json
+      caserver: https://acme-staging-v02.api.letsencrypt.org/directory
+      httpChallenge:
+        # used during the challenge
+        entryPoint: web
+
+log:
+  level: DEBUG
+  #format: json
+
+api:
+  insecure: true
+  dashboard: true
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    #    endpoint: tcp://10.10.10.10:2375
+    exposedByDefault: false
+  file:
+    directory: "./dynamic"
