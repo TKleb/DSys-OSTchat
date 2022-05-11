@@ -4,6 +4,7 @@
 - [Architecture overview](#architecture)
 - [Security](#security)
 - [Note on statelessness of containers](#note-on-statelessness-of-containers)
+- [Useful links](#useful-links)
 
 # Idea
 Create a simple platform with a few pre-defined chat rooms, all of which are load-balanced and have built in redundancy.
@@ -23,3 +24,6 @@ Security concerns (safe login, avoiding information through URL, etc.) have been
 Statelessness is achieved by making the database the authoritative central storage of all data. Backends stay up to date by polling the database and passing along the latest message they are aware of - the database then returns all messages that are newer than the provided one. This way the instances don't require individual configuration and can stay up to date without the need for inter-replica communication.
 
 Sessions are done via arguments in the URL. We are aware that this is not very safe; however, we opted against sinking additional time into this aspect of the project, as explained in the [security](#security) chapter.
+
+# Useful links
+- [Traefik TLS simple walkthrough](https://doc.traefik.io/traefik/user-guides/docker-compose/acme-tls/)

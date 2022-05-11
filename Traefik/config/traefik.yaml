@@ -16,13 +16,6 @@ entryPoints:
   websecure:
     address: :443
 
-certificatesResolvers:
-  letsencrypt:
-    acme:
-      httpChallenge:
-        # used during the challenge
-        entryPoint: web
-
 log:
   level: INFO
   #format: json
