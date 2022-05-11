@@ -16,6 +16,9 @@ entryPoints:
   websecure:
     address: :443
 
+log:
+  level: DEBUG
+
 api:
   insecure: true
   dashboard: true
