@@ -25,6 +25,7 @@ services:
     volumes:
       - letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - logs:/var/log/traefik
       #- ./Traefik/config/traefik.yaml:/etc/traefik/traefik.yaml
 
   oschat-web:
@@ -115,3 +116,4 @@ networks:
 volumes:
   ostchat-pgadmin:
   letsencrypt:
+  logs:
