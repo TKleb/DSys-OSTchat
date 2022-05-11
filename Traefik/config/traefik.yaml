@@ -21,7 +21,6 @@ certificatesResolvers:
     acme:
       email: dominic.walther@ost.ch
       storage: /letsencrypt/acme.json
-      caserver: https://acme-staging-v02.api.letsencrypt.org/directory
       httpChallenge:
         # used during the challenge
         entryPoint: web
