@@ -24,7 +24,7 @@ services:
       - log.level=DEBUG
       - certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
     volumes:
-      - /ostchat/traefik/letsencrypt:/letsencrypt
+      - letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock:ro
       #- ./Traefik/config/traefik.yaml:/etc/traefik/traefik.yaml
 
@@ -115,3 +115,4 @@ networks:
 
 volumes:
   ostchat-pgadmin:
+  letsencrypt:
