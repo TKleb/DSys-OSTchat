@@ -20,8 +20,11 @@ services:
       - certificatesresolvers.letsencrypt.acme.email=${EMAIL}
       - certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
       - certificatesresolvers.letsencrypt.acme.tlschallenge=true
+      # Debug purposes - comment out in production
+      - log.level=DEBUG
+      - certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
     volumes:
-      - /ostchat/traefik/letsencrypt/:/letsencrypt
+      - /ostchat/traefik/letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock:ro
       #- ./Traefik/config/traefik.yaml:/etc/traefik/traefik.yaml
 
