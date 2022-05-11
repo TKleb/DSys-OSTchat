@@ -11,7 +11,7 @@ function getQueryVariable(variable) {
     for (let i = 0; i < vars.length; i++) {
         let pair = vars[i].split('=');
         if (decodeURIComponent(pair[0]) === variable) {
-            return decodeURIComponent(pair[1]).replace('+',' ');
+            return decodeURIComponent(pair[1]).replace('+', ' ');
         }
     }
     console.log('Query variable %s not found', variable);
@@ -21,9 +21,9 @@ const username = getQueryVariable("username");
 const room = getQueryVariable("chatroom-selection")
 
 // Socket Stuff
-let socket = io({reconnectionDelayMax: 2000});
+let socket = io({ reconnectionDelayMax: 2000 });
 
-function connectToServer(){
+function connectToServer() {
     socket.emit('userJoin', { username, room });
 }
 
@@ -41,7 +41,7 @@ socket.on('currentUsers', ({ room, users }) => {
 
 socket.on('disconnect', (reason) => {
     console.log('Disconnected:', reason);
-    if (reason === 'transport close'){
+    if (reason === 'transport close' || reason === 'ping timeout' || reason === 'transport error') {
         connectToServer();
         console.log('Disconnect from current node, possibly down.');
     }
