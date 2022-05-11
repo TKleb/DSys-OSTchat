@@ -17,15 +17,15 @@ services:
       - 8080:8080
     labels:
       # Traefik.yaml
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--log.level=DEBUG"
+      - entrypoints.web.address=:80
+      - entrypoints.websecure.address=:443
+      - log.level=DEBUG
       #
-      - "--certificatesResolvers.letsencrypt.acme.email=${EMAIL}"
-      - "--certificatesResolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
-      - "--certificatesResolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - certificatesResolvers.letsencrypt.acme.email=${EMAIL}
+      - certificatesResolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
+      - certificatesResolvers.letsencrypt.acme.httpchallenge.entrypoint=web
       # Debug purposes - comment out in production
-      - "--certificatesResolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - certificatesResolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
     volumes:
       - /ostchat/traefik/letsencryp/acme.json:/letsencrypt/acme.json:rw
       - /var/run/docker.sock:/var/run/docker.sock:ro
