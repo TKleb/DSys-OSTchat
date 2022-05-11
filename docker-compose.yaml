@@ -16,6 +16,10 @@ services:
       - 80:80
       - 443:443
       - 8080:8080
+    labels:
+      - certificatesresolvers.letsencrypt.acme.email=${EMAIL}
+      - certificatesresolvers.letsencrypt.acme.storage=/etc/traefik/acme/acme.json
+      - certificatesresolvers.letsencrypt.acme.tlschallenge=true
     volumes:
       - /etc/traefik/acme:/etc/traefik/acme
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -41,6 +45,7 @@ services:
       - traefik.http.services.web.loadBalancer.sticky.cookie=true
       # HTTPS:
       - traefik.http.routers.web.tls=true
+      - traefik.http.routers.web.tls.domains[0].main=${MY_DOMAIN}
       - traefik.http.routers.web.tls.certresolver=letsencrypt
     volumes:
       - /etc/localtime:/etc/localtime:ro

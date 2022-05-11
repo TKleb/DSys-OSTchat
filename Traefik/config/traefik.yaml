@@ -19,8 +19,6 @@ entryPoints:
 certificatesResolvers:
   letsencrypt:
     acme:
-      email: dominic.walther@ost.ch
-      storage: acme.json
       httpChallenge:
         # used during the challenge
         entryPoint: web
