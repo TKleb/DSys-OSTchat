@@ -57,9 +57,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-ostchat}
     ports:
       - '${POSTGRES_PORT:-5432}:5432'
-    # TODO: Volume currently disabled to make it volatile. Uncomment to make it persistent.
-    #volumes:
-    #  - postgres-db:/var/lib/postgresql/data
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
     networks:
       - ostchat-backend-db
       - ostchat-db-pgadmin4
@@ -106,5 +105,6 @@ networks:
 
 volumes:
   ostchat-pgadmin:
+  postgres-db:
   letsencrypt:
   logs:
